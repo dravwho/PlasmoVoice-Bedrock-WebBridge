@@ -1,0 +1,72 @@
+plugins {
+    id 'fabric-loom' version '1.11-SNAPSHOT'
+    id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.fabricmc.net/' }
+    maven { url = 'https://repo.plasmoverse.com/releases' }
+    maven { url = 'https://repo.plasmoverse.com/snapshots' }
+    maven { url = 'https://repo.plo.su' }
+    maven {
+        name = 'opencollab-snapshot'
+        url = 'https://repo.opencollab.dev/main/'
+    }
+    maven {
+        name = 'opencollab-release'
+        url = 'https://repo.opencollab.dev/maven-releases/'
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    compileOnly "su.plo.voice.api:server:${project.plasmo_voice_version}"
+    compileOnly "org.geysermc.floodgate:api:2.2.4-SNAPSHOT"
+
+    include implementation('org.java-websocket:Java-WebSocket:1.5.7')
+    compileOnly 'com.google.code.gson:gson:2.11.0'
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 21
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+    from('LICENSE') {
+        rename { "${it}_${project.base.archivesName.get()}" }
+    }
+}
+
+publishing {
+    publications {
+        create('mavenJava', MavenPublication) {
+            artifactId = project.archives_base_name
+            from components.java
+        }
+    }
+}

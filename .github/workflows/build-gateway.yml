@@ -1,0 +1,40 @@
+name: Build Gateway
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'apps/gateway/**'
+      - '.github/workflows/build-gateway.yml'
+  pull_request:
+    paths:
+      - 'apps/gateway/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/gateway
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/gateway/package.json
+
+      - name: Install & build
+        run: |
+          npm install
+          npm run build
+
+      - name: Upload dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: gateway-dist
+          path: apps/gateway/dist/
