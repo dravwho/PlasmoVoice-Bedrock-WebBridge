@@ -1,0 +1,11 @@
+{
+  "name": "plasmovoice-bedrock-webbridge",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Cross-platform proximity voice for Minecraft Java + Bedrock",
+  "scripts": {
+    "gateway:dev": "npm run dev --prefix apps/gateway",
+    "gateway:build": "npm run build --prefix apps/gateway",
+    "gateway:start": "npm run start --prefix apps/gateway"
+  }
+}
